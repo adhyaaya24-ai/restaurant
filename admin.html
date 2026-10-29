@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow"> <!-- keeps Google from listing the admin page -->
+  <title>Admin | Menu Manager</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ============ LOGIN ============ -->
+<div id="loginView">
+  <div class="login-box">
+    <h2>Admin Login</h2>
+    <p style="color:#7a6f66">Enter the owner password</p>
+    <input type="password" id="pw" placeholder="Password">
+    <button class="btn" style="width:100%" onclick="login()">Login</button>
+    <p id="loginErr" style="color:#b3261e;margin-top:10px"></p>
+  </div>
+</div>
+
+<!-- ============ DASHBOARD ============ -->
+<div id="adminView" style="display:none">
+  <nav class="nav solid">
+    <a href="index.html" class="logo"><span class="brand-name">Restaurant</span><small>ADMIN PANEL</small></a>
+    <ul style="display:flex">
+      <li><a href="index.html">View Website</a></li>
+      <li><a href="#" onclick="logout()">Logout</a></li>
+    </ul>
+  </nav>
+
+  <div class="admin-wrap">
+
+    <div class="panel">
+      <h2>Orders Dashboard</h2>
+      <div class="stats">
+        <div class="stat"><b id="stToday">0</b>Orders today</div>
+        <div class="stat"><b id="stRevenue">&#8377;0</b>Sales today</div>
+        <div class="stat"><b id="stAll">0</b>Total orders</div>
+        <div class="stat"><b id="stTop">-</b>Top seller</div>
+      </div>
+      <p style="font-size:12px;color:#7a6f66">Counts orders placed from this browser. A shared dashboard needs a database (next upgrade).</p>
+    </div>
+
+    <div class="panel">
+      <h2>Add New Dish</h2>
+      <div class="form-grid">
+        <div><label>Name</label><input id="nName" placeholder="e.g. Chicken 65"></div>
+        <div><label>Price (&#8377;)</label><input id="nPrice" type="number" placeholder="150"></div>
+        <div><label>Category</label><input id="nCat" placeholder="Biryani, Meals, Sweets..."></div>
+        <div><label>Type</label><select id="nVeg"><option value="1">Veg</option><option value="0">Non-Veg</option></select></div>
+        <div><label>Image path or link</label><input id="nImg" placeholder="images/my-dish.jpg"></div>
+        <div style="grid-column:1/-1"><label>Description</label><textarea id="nDesc" rows="2"></textarea></div>
+      </div>
+      <button class="btn" style="margin-top:14px" onclick="addDish()">Add Dish</button>
+    </div>
+
+    <div class="panel">
+      <h2>Menu Items (edit price, availability, delete)</h2>
+      <div style="overflow-x:auto">
+        <table>
+          <thead><tr><th>Photo</th><th>Dish</th><th>Category</th><th>Price (&#8377;)</th><th>Today</th><th></th></tr></thead>
+          <tbody id="rows"></tbody>
+        </table>
+      </div>
+      <button class="mini" style="margin-top:14px;background:#fdeaea;color:#b3261e" onclick="resetMenu()">Reset menu to default</button>
+    </div>
+
+  </div>
+</div>
+
+<script src="data.js"></script>
+<script>
+  document.querySelectorAll(".brand-name").forEach(e => e.textContent = SETTINGS.name);
+  let menu = getMenu();
+
+  /* ---------- login (sample only: the password sits in data.js, see note below) ---------- */
+  function login() {
+    if (document.getElementById("pw").value === SETTINGS.adminPassword) {
+      sessionStorage.setItem("isAdmin", "1"); openAdmin();
+    } else { document.getElementById("loginErr").textContent = "Wrong password."; }
+  }
+  function logout() { sessionStorage.removeItem("isAdmin"); location.reload(); }
+  document.getElementById("pw").addEventListener("keydown", e => { if (e.key === "Enter") login(); });
+  function openAdmin() {
+    document.getElementById("loginView").style.display = "none";
+    document.getElementById("adminView").style.display = "block";
+    showRows(); showStats();
+  }
+  if (sessionStorage.getItem("isAdmin") === "1") openAdmin();
+
+  /* ---------- menu table ---------- */
+  function showRows() {
+    document.getElementById("rows").innerHTML = menu.map(m => `
+      <tr>
+        <td><img src="${m.img}" alt=""></td>
+        <td><b>${m.name}</b><br><small>${m.veg ? "Veg" : "Non-Veg"}</small></td>
+        <td>${m.cat}</td>
+        <td><input type="number" value="${m.price}" id="p-${m.id}"> <button class="mini save" onclick="updatePrice(${m.id})">Save</button></td>
+        <td><button class="switch ${m.available ? "on" : "off"}" onclick="toggleAvail(${m.id})">${m.available ? "Available" : "Sold out"}</button></td>
+        <td><button class="mini del" onclick="delDish(${m.id})">Delete</button></td>
+      </tr>`).join("");
+  }
+  function updatePrice(id) {
+    const v = parseInt(document.getElementById("p-" + id).value);
+    if (!v || v < 0) { alert("Enter a valid price"); return; }
+    menu.find(m => m.id === id).price = v; saveMenu(menu); alert("Price updated");
+  }
+  function toggleAvail(id) {
+    const m = menu.find(m => m.id === id); m.available = !m.available; saveMenu(menu); showRows();
+  }
+  function delDish(id) {
+    if (!confirm("Delete this dish?")) return;
+    menu = menu.filter(m => m.id !== id); saveMenu(menu); showRows();
+  }
+  function addDish() {
+    const name = document.getElementById("nName").value.trim();
+    const price = parseInt(document.getElementById("nPrice").value);
+    if (!name || !price) { alert("Please enter a name and price"); return; }
+    const id = Math.max(0, ...menu.map(m => m.id)) + 1;
+    menu.push({
+      id, name, price,
+      veg: document.getElementById("nVeg").value === "1",
+      available: true,
+      cat: document.getElementById("nCat").value.trim() || "Others",
+      img: document.getElementById("nImg").value.trim() || "images/veg-thali.jpg",
+      desc: document.getElementById("nDesc").value.trim() || "Freshly prepared."
+    });
+    saveMenu(menu); showRows();
+    ["nName","nPrice","nCat","nImg","nDesc"].forEach(i => document.getElementById(i).value = "");
+  }
+  function resetMenu() {
+    if (!confirm("Reset the whole menu to the original list?")) return;
+    localStorage.removeItem("menuData"); menu = getMenu(); showRows();
+  }
+
+  /* ---------- dashboard numbers ---------- */
+  function showStats() {
+    const log = JSON.parse(localStorage.getItem("orderLog") || "[]");
+    const start = new Date(); start.setHours(0, 0, 0, 0);
+    const today = log.filter(o => o.time >= start.getTime());
+    document.getElementById("stToday").textContent = today.length;
+    document.getElementById("stRevenue").textContent = rupees(today.reduce((a, o) => a + o.total, 0));
+    document.getElementById("stAll").textContent = log.length;
+    const count = {};
+    log.forEach(o => { for (const id in o.items) count[id] = (count[id] || 0) + o.items[id]; });
+    const top = Object.entries(count).sort((a, b) => b[1] - a[1])[0];
+    if (top) { const m = menu.find(x => x.id == top[0]); document.getElementById("stTop").textContent = m ? m.name.split(" ")[0] : "-"; }
+  }
+</script>
+</body>
+</html>

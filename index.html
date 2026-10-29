@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- SEO: title + description + keywords are what Google shows in search results -->
+  <title>Best Telugu Meals &amp; Biryani Restaurant in Miyapur, Hyderabad | Order on WhatsApp</title>
+  <meta name="description" content="Authentic Andhra and Telangana meals, Hyderabadi biryani, thali, pulihora and perugannam in Miyapur, Hyderabad. Dine-in, takeaway and home delivery. Order on WhatsApp.">
+  <meta name="keywords" content="restaurant in Miyapur, Telugu meals Miyapur, biryani Miyapur, thali Hyderabad, home delivery food Miyapur, Andhra meals, pulihora, perugannam, order food WhatsApp">
+  <link rel="stylesheet" href="style.css">
+
+  <!-- SEO: structured data so Google can show restaurant details -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Restaurant",
+    "name": "Restaurant",
+    "servesCuisine": ["Telugu", "Andhra", "Hyderabadi", "Indian"],
+    "telephone": "+917901232423",
+    "address": { "@type": "PostalAddress", "addressLocality": "Miyapur", "addressRegion": "Telangana", "addressCountry": "IN" },
+    "openingHours": "Mo-Su 11:00-23:00",
+    "priceRange": "Rs 80 - Rs 350",
+    "hasMenu": "menu.html"
+  }
+  </script>
+</head>
+<body>
+
+<!-- ============ NAV + HERO ============ -->
+<header class="hero" id="home">
+  <nav class="nav">
+    <a href="index.html" class="logo"><span class="brand-name">Restaurant</span><small>AUTHENTIC TELUGU MEALS</small></a>
+    <button class="menu-toggle" id="menuToggle" aria-label="Open menu">&#9776;</button>
+    <ul id="navLinks">
+      <li><a href="#home" class="active">Home</a></li>
+      <li><a href="#services">Services</a></li>
+      <li><a href="menu.html">Menu</a></li>
+      <li><a href="#about">About</a></li>
+      <li><a href="#contact">Contact</a></li>
+      <li><a href="menu.html#cart" class="cart-link">Order <span class="cart-badge">0</span></a></li>
+    </ul>
+  </nav>
+
+  <div class="hero-content">
+    <div class="eyebrow">Welcome to <span class="brand-name">Restaurant</span> &middot; Miyapur</div>
+    <h1>Real Telugu Meals <span>Made With Love</span></h1>
+    <p>Hot rice, pure ghee, spicy curries and Hyderabadi biryani. Dine in, take away, or get it delivered. Order directly on WhatsApp.</p>
+    <div class="hero-btns">
+      <a href="menu.html" class="btn">View Menu &amp; Order</a>
+      <a href="#" class="btn outline wa-link">Order on WhatsApp</a>
+    </div>
+  </div>
+</header>
+
+<!-- ============ SERVICES ============ -->
+<div class="services" id="services">
+  <div class="service"><div class="ico">&#127869;</div><h3>Dine-In</h3><p>Comfortable family seating</p></div>
+  <div class="service"><div class="ico">&#129377;</div><h3>Takeaway</h3><p>Ready when you arrive</p></div>
+  <div class="service"><div class="ico">&#128757;</div><h3>Home Delivery</h3><p>Hot food at your door</p></div>
+  <div class="service"><div class="ico">&#127881;</div><h3>Party Orders</h3><p>Bulk and function orders</p></div>
+  <div class="service"><div class="ico">&#128222;</div><h3>Catering</h3><p>For events and gatherings</p></div>
+</div>
+
+<!-- ============ SIGNATURE DISHES (animated on scroll) ============ -->
+<section class="signature" id="signature">
+  <div class="sec-head">
+    <div class="eyebrow">Our Specialities</div>
+    <h2>Signature Dishes</h2>
+    <p>Simple, traditional dishes cooked the way they are made at home.</p>
+  </div>
+  <div id="sigList"></div>
+</section>
+
+<!-- ============ MENU SHOWCASE (looping animation) ============ -->
+<section class="showcase" id="showcase">
+  <div class="sec-head">
+    <div class="eyebrow">From Our Kitchen</div>
+    <h2>Popular on the Menu</h2>
+    <p>Tap any dish to see the full menu and order.</p>
+  </div>
+  <div class="show-stage" id="showStage"></div>
+  <div class="dots" id="showDots"></div>
+  <div class="show-cta"><a href="menu.html" class="btn">See Full Menu</a></div>
+</section>
+
+<!-- ============ ABOUT ============ -->
+<section class="about" id="about">
+  <div class="about-img"></div>
+  <div class="about-text">
+    <div class="eyebrow">About Us</div>
+    <h2>More Than Just a Meal</h2>
+    <p>At <span class="brand-name">Restaurant</span> we cook Telugu food the traditional way: fresh ingredients, pure ghee, and recipes handed down in the family. From a simple curd rice to a full thali and Hyderabadi dum biryani, every plate is made to feel like home.</p>
+    <div><a href="menu.html" class="btn">Explore Menu</a></div>
+  </div>
+</section>
+
+<!-- ============ REVIEWS ============ -->
+<section class="reviews" id="reviews">
+  <div class="sec-head">
+    <div class="eyebrow">What Our Guests Say</div>
+    <h2>Happy Customers</h2>
+  </div>
+  <div class="review-box" id="reviewBox"></div>
+</section>
+
+<!-- ============ CONTACT ============ -->
+<section class="contact" id="contact">
+  <div class="sec-head">
+    <div class="eyebrow">Get in Touch</div>
+    <h2>Contact &amp; Location</h2>
+  </div>
+  <div class="contact-grid">
+    <div class="c-card"><div class="ico">&#128222;</div><h3>Call Us</h3><a id="phoneText" href="#"></a></div>
+    <div class="c-card"><div class="ico">&#128172;</div><h3>WhatsApp</h3><a href="#" class="wa-link">Chat to order</a></div>
+    <div class="c-card"><div class="ico">&#128205;</div><h3>Address</h3><span id="addrText"></span></div>
+    <div class="c-card"><div class="ico">&#128339;</div><h3>Hours</h3><span id="hoursText"></span></div>
+  </div>
+  <div class="map-frame">
+    <iframe title="Map of Miyapur" loading="lazy" src="https://www.google.com/maps?q=Miyapur,Hyderabad&output=embed"></iframe>
+  </div>
+</section>
+
+<footer>
+  <div class="logo"><span class="brand-name">Restaurant</span></div>
+  <div>&copy; 2026 <span class="brand-name">Restaurant</span>, Miyapur. All rights reserved.</div>
+</footer>
+
+<div class="float-btns">
+  <a href="#" class="fb-wa wa-link" aria-label="WhatsApp">&#128172;</a>
+  <a href="#" class="fb-call" id="callFloat" aria-label="Call">&#128222;</a>
+</div>
+
+<script src="data.js"></script>
+<script>
+  /* 1. Fill in name, phone, address everywhere from SETTINGS (data.js) */
+  document.querySelectorAll(".brand-name").forEach(e => e.textContent = SETTINGS.name);
+  document.querySelectorAll(".wa-link").forEach(e => {
+    e.href = "https://wa.me/" + SETTINGS.whatsapp + "?text=" + encodeURIComponent("Hi, I would like to place an order.");
+    e.target = "_blank";
+  });
+  document.getElementById("phoneText").textContent = "+91 " + SETTINGS.phone;
+  document.getElementById("phoneText").href = "tel:+91" + SETTINGS.phone;
+  document.getElementById("callFloat").href = "tel:+91" + SETTINGS.phone;
+  document.getElementById("addrText").textContent = SETTINGS.address;
+  document.getElementById("hoursText").textContent = SETTINGS.hours;
+  updateCartBadge();
+
+  /* mobile menu button */
+  document.getElementById("menuToggle").onclick = () => document.getElementById("navLinks").classList.toggle("open");
+
+  const menu = getMenu();
+
+  /* 2. Signature dishes: built from the menu, animated when scrolled into view */
+  const sigHTML = SIGNATURE_IDS.map(id => menu.find(m => m.id === id)).filter(Boolean).map(m => `
+    <div class="sig-row">
+      <div class="sig-img"><img src="${m.img}" alt="${m.name}" loading="lazy"></div>
+      <div class="sig-text">
+        <span class="tag ${m.veg ? "" : "nv"}">${m.veg ? "Veg" : "Non-Veg"}</span>
+        <h3>${m.name}</h3>
+        <p>${m.desc}</p>
+        <div class="sig-price">${rupees(m.price)}</div>
+        <a class="btn" href="menu.html?item=${m.id}">Order Now</a>
+      </div>
+    </div>`).join("");
+  document.getElementById("sigList").innerHTML = sigHTML;
+
+  /* IntersectionObserver watches for each row entering the screen, then adds class "show" which triggers the CSS slide-in */
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(en => { if (en.isIntersecting) { en.target.classList.add("show"); io.unobserve(en.target); } });
+  }, { threshold: 0.25 });
+  document.querySelectorAll(".sig-row").forEach(r => io.observe(r));
+
+  /* 3. Looping menu showcase: 6 dishes, photo rises, info slides in, then leaves, next one comes */
+  const showItems = menu.filter(m => m.available).slice(0, 6);
+  const stage = document.getElementById("showStage");
+  const dotsBox = document.getElementById("showDots");
+  stage.innerHTML = showItems.map(m => `
+    <div class="show-slide">
+      <div class="s-img"><img src="${m.img}" alt="${m.name}"></div>
+      <div class="s-info">
+        <span class="tag ${m.veg ? "" : "nv"}">${m.veg ? "Veg" : "Non-Veg"}</span>
+        <h3>${m.name}</h3>
+        <p>${m.desc}</p>
+        <div class="price" style="color:#fff">${rupees(m.price)}</div>
+        <a class="btn" href="menu.html?item=${m.id}">Order This</a>
+      </div>
+    </div>`).join("");
+  dotsBox.innerHTML = showItems.map((_, i) => `<button data-i="${i}" aria-label="Show dish ${i + 1}"></button>`).join("");
+
+  const slides = stage.querySelectorAll(".show-slide");
+  const dots = dotsBox.querySelectorAll("button");
+  let cur = -1, timer, paused = false;
+
+  function showSlide(n) {
+    if (cur >= 0) {
+      const old = slides[cur];
+      old.classList.remove("active"); old.classList.add("leaving");
+      setTimeout(() => old.classList.remove("leaving"), 600);
+    }
+    cur = n;
+    slides[cur].classList.add("active");
+    dots.forEach((d, i) => d.classList.toggle("on", i === cur));
+  }
+  function next() { if (!paused) showSlide((cur + 1) % slides.length); }
+  function start() { clearInterval(timer); timer = setInterval(next, 4500); }
+
+  showSlide(0); start();
+  dots.forEach(d => d.onclick = () => { showSlide(+d.dataset.i); start(); });
+  stage.onmouseenter = () => paused = true;   // pause while the mouse is over it
+  stage.onmouseleave = () => paused = false;
+
+  /* 4. Reviews slider */
+  const reviews = [
+    { t: "The perugannam and pulihora tasted exactly like home. Pure ghee in the pappu annam, loved it!", n: "Priya S." },
+    { t: "Best Hyderabadi biryani in Miyapur. Delivery was quick and the food was still hot.", n: "Rahul K." },
+    { t: "Ordered the veg thali for the family. Great value, so many items, and very tasty.", n: "Lakshmi R." },
+    { t: "Ordering on WhatsApp was so easy. Gongura chicken was perfectly tangy and spicy.", n: "Anil M." }
+  ];
+  let r = 0;
+  function showReview() {
+    const x = reviews[r];
+    document.getElementById("reviewBox").innerHTML = `<div class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div><p>"${x.t}"</p><strong>- ${x.n}</strong>`;
+    r = (r + 1) % reviews.length;
+  }
+  showReview(); setInterval(showReview, 5000);
+</script>
+</body>
+</html>

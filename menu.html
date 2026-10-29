@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Menu &amp; Order Online | Telugu Meals, Biryani, Thali in Miyapur</title>
+  <meta name="description" content="Full menu with prices: biryani, thali, gongura chicken, pulihora, perugannam and sweets. Add to cart and order on WhatsApp. Miyapur, Hyderabad.">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<nav class="nav solid">
+  <a href="index.html" class="logo"><span class="brand-name">Restaurant</span><small>AUTHENTIC TELUGU MEALS</small></a>
+  <button class="menu-toggle" id="menuToggle" aria-label="Open menu">&#9776;</button>
+  <ul id="navLinks">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="index.html#services">Services</a></li>
+    <li><a href="menu.html" class="active">Menu</a></li>
+    <li><a href="index.html#about">About</a></li>
+    <li><a href="index.html#contact">Contact</a></li>
+    <li><a href="#cart" class="cart-link">Cart <span class="cart-badge">0</span></a></li>
+  </ul>
+</nav>
+
+<div class="page-top">
+  <h1>Our Menu</h1>
+  <p>Add your favourites to the cart and send your order straight to WhatsApp.</p>
+</div>
+
+<div class="menu-layout">
+  <!-- LEFT: menu items -->
+  <div>
+    <input class="search" id="search" placeholder="Search dishes...">
+    <div class="filters" id="filters"></div>
+    <div class="menu-grid" id="menuGrid"></div>
+  </div>
+
+  <!-- RIGHT: cart + bill + customer details -->
+  <aside class="cart-panel" id="cart">
+    <h2>Your Order</h2>
+    <div id="cartItems"></div>
+    <div class="totals">
+      <p><span>Subtotal</span><span id="sub">&#8377;0</span></p>
+      <p><span id="gstLabel">GST</span><span id="gst">&#8377;0</span></p>
+      <p class="grand"><span>Total</span><span id="total">&#8377;0</span></p>
+    </div>
+    <input id="custName" placeholder="Your name">
+    <input id="custPhone" placeholder="Phone number" inputmode="tel">
+    <select id="orderType">
+      <option value="Home Delivery">Home Delivery</option>
+      <option value="Takeaway">Takeaway</option>
+      <option value="Dine-In">Dine-In</option>
+    </select>
+    <input id="custAddress" placeholder="Delivery address">
+    <input id="custNote" placeholder="Note (optional) e.g. less spicy">
+    <button class="wa-btn" id="sendBtn">Place Order on WhatsApp</button>
+    <div class="note">Your order opens in WhatsApp. The restaurant will confirm by call or message.</div>
+  </aside>
+</div>
+
+<footer>
+  <div class="logo"><span class="brand-name">Restaurant</span></div>
+  <div>&copy; 2026 <span class="brand-name">Restaurant</span>, Miyapur. All rights reserved.</div>
+</footer>
+
+<div class="float-btns">
+  <a href="#" class="fb-wa wa-link" aria-label="WhatsApp">&#128172;</a>
+  <a href="#" class="fb-call" id="callFloat" aria-label="Call">&#128222;</a>
+</div>
+
+<script src="data.js"></script>
+<script>
+  document.querySelectorAll(".brand-name").forEach(e => e.textContent = SETTINGS.name);
+  document.querySelectorAll(".wa-link").forEach(e => {
+    e.href = "https://wa.me/" + SETTINGS.whatsapp + "?text=" + encodeURIComponent("Hi, I would like to place an order.");
+    e.target = "_blank";
+  });
+  document.getElementById("callFloat").href = "tel:+91" + SETTINGS.phone;
+  document.getElementById("gstLabel").textContent = "GST (" + Math.round(SETTINGS.gstRate * 100) + "%)";
+  document.getElementById("menuToggle").onclick = () => document.getElementById("navLinks").classList.toggle("open");
+
+  let menu = getMenu();
+  let activeCat = "All";
+  let searchText = "";
+
+  /* ---------- show menu cards ---------- */
+  function showFilters() {
+    const cats = ["All", ...new Set(menu.map(m => m.cat))];
+    document.getElementById("filters").innerHTML = cats.map(c =>
+      `<button class="${c === activeCat ? "on" : ""}" onclick="setCat('${c}')">${c}</button>`).join("");
+  }
+  function setCat(c) { activeCat = c; showFilters(); showMenu(); }
+
+  function showMenu() {
+    const list = menu.filter(m =>
+      (activeCat === "All" || m.cat === activeCat) &&
+      m.name.toLowerCase().includes(searchText));
+    document.getElementById("menuGrid").innerHTML = list.map(m => `
+      <div class="card" id="item-${m.id}">
+        <img src="${m.img}" alt="${m.name}" loading="lazy">
+        <div class="card-body">
+          <span class="tag ${m.veg ? "" : "nv"}">${m.veg ? "Veg" : "Non-Veg"}</span>
+          <h3>${m.name}</h3>
+          <p>${m.desc}</p>
+          <div class="price">${rupees(m.price)}</div>
+          ${m.available
+            ? `<button class="add-btn" onclick="addToCart(${m.id})">Add to Cart</button>`
+            : `<button class="add-btn" disabled>Not available today</button>`}
+        </div>
+      </div>`).join("") || "<p class='empty'>No dishes found.</p>";
+  }
+  document.getElementById("search").oninput = e => { searchText = e.target.value.toLowerCase(); showMenu(); };
+
+  /* ---------- cart ---------- */
+  function addToCart(id) {
+    const cart = getCart(); cart[id] = (cart[id] || 0) + 1; saveCart(cart); showCart();
+  }
+  function changeQty(id, d) {
+    const cart = getCart(); cart[id] = (cart[id] || 0) + d;
+    if (cart[id] <= 0) delete cart[id];
+    saveCart(cart); showCart();
+  }
+  function calcTotals() {
+    const cart = getCart(); let sub = 0;
+    for (const id in cart) {
+      const item = menu.find(m => m.id == id);
+      if (item) sub += item.price * cart[id];
+    }
+    const gst = Math.round(sub * SETTINGS.gstRate);
+    return { sub, gst, total: sub + gst };
+  }
+  function showCart() {
+    const cart = getCart(); let html = "";
+    for (const id in cart) {
+      const item = menu.find(m => m.id == id);
+      if (!item) continue;
+      html += `<div class="cart-row">
+        <span class="nm">${item.name}</span>
+        <span class="qty"><button onclick="changeQty(${id}, -1)">-</button><span>${cart[id]}</span><button onclick="changeQty(${id}, 1)">+</button></span>
+        <span>${rupees(item.price * cart[id])}</span></div>`;
+    }
+    document.getElementById("cartItems").innerHTML = html || "<p class='empty'>Your cart is empty. Add some dishes.</p>";
+    const t = calcTotals();
+    document.getElementById("sub").textContent = rupees(t.sub);
+    document.getElementById("gst").textContent = rupees(t.gst);
+    document.getElementById("total").textContent = rupees(t.total);
+    updateCartBadge();
+  }
+
+  /* ---------- send the whole bill to WhatsApp ---------- */
+  document.getElementById("sendBtn").onclick = () => {
+    const cart = getCart();
+    if (Object.keys(cart).length === 0) { alert("Please add some dishes first."); return; }
+    const name = document.getElementById("custName").value.trim();
+    const phone = document.getElementById("custPhone").value.trim();
+    const type = document.getElementById("orderType").value;
+    const address = document.getElementById("custAddress").value.trim();
+    const note = document.getElementById("custNote").value.trim();
+    if (!name || !phone) { alert("Please enter your name and phone number."); return; }
+    if (type === "Home Delivery" && !address) { alert("Please enter your delivery address."); return; }
+
+    let msg = "*New Order - " + SETTINGS.name + "*\n\n";
+    let n = 1;
+    for (const id in cart) {
+      const item = menu.find(m => m.id == id);
+      if (!item) continue;
+      msg += n++ + ". " + item.name + " x " + cart[id] + " = " + rupees(item.price * cart[id]) + "\n";
+    }
+    const t = calcTotals();
+    msg += "\nSubtotal: " + rupees(t.sub);
+    msg += "\nGST (" + Math.round(SETTINGS.gstRate * 100) + "%): " + rupees(t.gst);
+    msg += "\n*Total: " + rupees(t.total) + "*\n\n";
+    msg += "Name: " + name + "\nPhone: " + phone + "\nOrder type: " + type;
+    if (type === "Home Delivery") msg += "\nAddress: " + address;
+    if (note) msg += "\nNote: " + note;
+
+    /* keep a simple order log for the admin dashboard */
+    const log = JSON.parse(localStorage.getItem("orderLog") || "[]");
+    log.push({ time: Date.now(), total: t.total, items: cart });
+    localStorage.setItem("orderLog", JSON.stringify(log));
+
+    window.open("https://wa.me/" + SETTINGS.whatsapp + "?text=" + encodeURIComponent(msg), "_blank");
+  };
+
+  showFilters(); showMenu(); showCart();
+
+  /* if the home page sent us here with ?item=3, scroll to and highlight that dish */
+  const wanted = new URLSearchParams(location.search).get("item");
+  if (wanted) {
+    setTimeout(() => {
+      const el = document.getElementById("item-" + wanted);
+      if (el) { el.scrollIntoView({ behavior: "smooth", block: "center" }); el.classList.add("highlight"); }
+    }, 300);
+  }
+</script>
+</body>
+</html>
